@@ -1,0 +1,655 @@
+index4.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>今日の一歩ログ</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --accent: #22d3ee;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: #1f2937;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      font-family: "Inter", "Noto Sans JP", system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.08), transparent 25%),
+        radial-gradient(circle at 80% 0%, rgba(94, 234, 212, 0.12), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 40px;
+    }
+
+    .app {
+      width: min(1024px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 32px);
+      letter-spacing: 0.4px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 4px 0 0;
+    }
+
+    .panel {
+      background: linear-gradient(145deg, #0b1220, #0f172a);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .input-row input[type="text"] {
+      flex: 1;
+      min-width: 220px;
+      background: #0b1220;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input-row input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+      border: none;
+      color: #0b1220;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.15s ease;
+      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
+      min-width: 120px;
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(14, 165, 233, 0.35);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+    }
+
+    button.ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    }
+
+    button.ghost:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(34, 211, 238, 0.08);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.08), rgba(11, 18, 32, 0.95));
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+    }
+
+    .stat-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .day-group {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #0c1424;
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    ul.entries {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #0f182b;
+      border: 1px solid transparent;
+      transition: border-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .entry:hover {
+      border-color: var(--border);
+    }
+
+    .entry-text {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .delete-btn:hover {
+      color: #f87171;
+      border-color: #f87171;
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 16px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    footer {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px 12px 32px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .entry {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      button.primary {
+        width: 100%;
+      }
+
+      .input-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>今日の一歩ログ</h1>
+        <p class="muted">小さな前進を1行でメモして、積み重ねを見える化するシンプルログ</p>
+      </div>
+      <button class="ghost" id="clearAll" aria-label="すべてのログを削除">データを全消去</button>
+    </header>
+
+    <section class="panel">
+      <form id="entryForm" class="input-row">
+        <input
+          type="text"
+          id="entryInput"
+          name="entry"
+          placeholder="例: 資料を1章読む / 新しいツールを試す"
+          autocomplete="off"
+          aria-label="今日やったことを1行で入力"
+          required
+        />
+        <button type="submit" class="primary">追加する</button>
+      </form>
+      <p class="muted" id="hint">Enterキーでも追加できます。午前/午後/夜の分類は、タグ付け（例: [午前]）で代用可能です。</p>
+    </section>
+
+    <section class="panel">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">今日のアクション数</div>
+          <div class="stat-value" id="todayCount">0</div>
+          <div class="stat-note" id="todayDate"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">累計アクション数</div>
+          <div class="stat-value" id="totalCount">0</div>
+          <div class="stat-note">この端末のローカルに保存しています</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">週次累計（月曜〜日曜）</div>
+          <div class="stat-value" id="weekCount">0</div>
+          <div class="stat-note" id="weekRange"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">今月の累計</div>
+          <div class="stat-value" id="monthCount">0</div>
+          <div class="stat-note" id="monthRange"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="day-header">
+        <span>今日のログ</span>
+        <span id="todayLabel" class="muted"></span>
+      </div>
+      <div id="todayList"></div>
+    </section>
+
+    <section class="panel">
+      <div class="day-header">
+        <span>これまでの記録</span>
+        <div class="entry-meta" style="gap: 6px;">
+          <button class="ghost" id="exportHistory" aria-label="これまでの記録をエクスポート">Excelエクスポート</button>
+          <span class="muted">日付ごとにまとまっています</span>
+        </div>
+      </div>
+      <div id="history"></div>
+    </section>
+
+    <footer>シンプルなローカル保存アプリです。端末を変えるとデータは共有されません。</footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "oneStepLogEntries";
+
+    const entryForm = document.getElementById("entryForm");
+    const entryInput = document.getElementById("entryInput");
+    const todayCountEl = document.getElementById("todayCount");
+    const totalCountEl = document.getElementById("totalCount");
+    const weekCountEl = document.getElementById("weekCount");
+    const monthCountEl = document.getElementById("monthCount");
+    const weekRangeEl = document.getElementById("weekRange");
+    const monthRangeEl = document.getElementById("monthRange");
+    const todayListEl = document.getElementById("todayList");
+    const historyEl = document.getElementById("history");
+    const todayLabelEl = document.getElementById("todayLabel");
+    const todayDateEl = document.getElementById("todayDate");
+    const clearAllButton = document.getElementById("clearAll");
+    const exportHistoryButton = document.getElementById("exportHistory");
+
+    const getLocalDateString = (date = new Date()) => {
+      const tzOffset = date.getTimezoneOffset() * 60000;
+      const local = new Date(date.getTime() - tzOffset);
+      return local.toISOString().slice(0, 10);
+    };
+
+    const formatTime = (dateString) => {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("ja-JP", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date);
+    };
+
+    const formatDateLabel = (dateString) => {
+      const date = new Date(dateString + "T00:00:00");
+      return new Intl.DateTimeFormat("ja-JP", {
+        month: "numeric",
+        day: "numeric",
+        weekday: "short",
+      }).format(date);
+    };
+
+    const loadEntries = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        console.error("Failed to load entries", error);
+        return [];
+      }
+    };
+
+    const saveEntries = (entries) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    };
+
+    const getTodayEntries = (entries) => {
+      const today = getLocalDateString();
+      return entries.filter((entry) => entry.date === today);
+    };
+
+    const getWeekRange = (date = new Date()) => {
+      const local = new Date(date.getTime());
+      const day = (local.getDay() + 6) % 7; // Monday=0
+      const monday = new Date(local);
+      monday.setDate(local.getDate() - day);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      return {
+        start: getLocalDateString(monday),
+        end: getLocalDateString(sunday),
+      };
+    };
+
+    const getMonthRange = (date = new Date()) => {
+      const start = new Date(date.getFullYear(), date.getMonth(), 1);
+      const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      return {
+        start: getLocalDateString(start),
+        end: getLocalDateString(end),
+      };
+    };
+
+    const groupByDate = (entries) => {
+      return entries.reduce((acc, entry) => {
+        acc[entry.date] = acc[entry.date] || [];
+        acc[entry.date].push(entry);
+        return acc;
+      }, {});
+    };
+
+    const renderEntries = () => {
+      const entries = loadEntries();
+      const todayEntries = getTodayEntries(entries);
+
+      todayCountEl.textContent = todayEntries.length;
+      totalCountEl.textContent = entries.length;
+
+      const { start: weekStart, end: weekEnd } = getWeekRange();
+      const weekEntries = entries.filter((entry) => entry.date >= weekStart && entry.date <= weekEnd);
+      weekCountEl.textContent = weekEntries.length;
+      weekRangeEl.textContent = `${weekStart} 〜 ${weekEnd}`;
+
+      const { start: monthStart, end: monthEnd } = getMonthRange();
+      const monthEntries = entries.filter((entry) => entry.date >= monthStart && entry.date <= monthEnd);
+      monthCountEl.textContent = monthEntries.length;
+      monthRangeEl.textContent = `${monthStart} 〜 ${monthEnd}`;
+
+      const todayLabel = formatDateLabel(getLocalDateString());
+      todayLabelEl.textContent = `${todayLabel}のメモ`;
+      todayDateEl.textContent = `${todayLabel}の進捗`;
+
+      if (todayEntries.length === 0) {
+        todayListEl.innerHTML = '<div class="empty-state">今日のメモはまだありません。小さな一歩を書いてみましょう。</div>';
+      } else {
+        todayListEl.innerHTML = createDayGroup(getLocalDateString(), todayEntries);
+      }
+
+      const grouped = groupByDate(entries);
+      const dates = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
+      const historyDates = dates.filter((date) => date !== getLocalDateString());
+
+      if (historyDates.length === 0) {
+        historyEl.innerHTML = '<div class="empty-state">過去の記録はまだありません。</div>';
+        return;
+      }
+
+      historyEl.innerHTML = historyDates
+        .map((date) => createDayGroup(date, grouped[date]))
+        .join("");
+    };
+
+    const createDayGroup = (date, entries) => {
+      const sorted = [...entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const label = formatDateLabel(date);
+      const itemList = sorted
+        .map(
+          (entry) => `
+            <li class="entry">
+              <p class="entry-text">${escapeHtml(entry.text)}</p>
+              <span class="entry-meta">
+                <span>${formatTime(entry.createdAt)}</span>
+                <button class="delete-btn" data-delete-id="${entry.id}" aria-label="この行を削除">削除</button>
+              </span>
+            </li>
+          `
+        )
+        .join("");
+
+      return `
+        <div class="day-group">
+          <div class="day-header">
+            <span>${label}</span>
+            <span class="muted">${sorted.length}件</span>
+          </div>
+          <ul class="entries">${itemList}</ul>
+        </div>
+      `;
+    };
+
+    const escapeHtml = (text) => {
+      const map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      };
+      return text.replace(/[&<>"']/g, (m) => map[m]);
+    };
+
+    const addEntry = (text) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      const now = new Date();
+      const entry = {
+        id: `${now.getTime()}-${Math.random().toString(16).slice(2, 6)}`,
+        text: trimmed,
+        createdAt: now.toISOString(),
+        date: getLocalDateString(now),
+      };
+
+      const entries = [entry, ...loadEntries()];
+      saveEntries(entries);
+      renderEntries();
+    };
+
+    const deleteEntry = (id) => {
+      const entries = loadEntries();
+      const nextEntries = entries.filter((entry) => entry.id !== id);
+      saveEntries(nextEntries);
+      renderEntries();
+    };
+
+    const toCsvValue = (value) => {
+      if (value == null) return "";
+      const stringValue = String(value);
+      if (stringValue.includes(",") || stringValue.includes("\"") || stringValue.includes("\n")) {
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      }
+      return stringValue;
+    };
+
+    const downloadHistoryCsv = () => {
+      const entries = loadEntries();
+      const today = getLocalDateString();
+      const historyEntries = entries.filter((entry) => entry.date !== today);
+
+      if (historyEntries.length === 0) {
+        alert("過去の記録がありません。");
+        return;
+      }
+
+      const { start: weekStart, end: weekEnd } = getWeekRange();
+      const { start: monthStart, end: monthEnd } = getMonthRange();
+      const totalCount = entries.length;
+      const weekCount = entries.filter((entry) => entry.date >= weekStart && entry.date <= weekEnd).length;
+      const monthCount = entries.filter((entry) => entry.date >= monthStart && entry.date <= monthEnd).length;
+
+      const summaryRows = [
+        ["メトリクス", "値"],
+        ["累計アクション数", totalCount],
+        ["週次累計（月曜〜日曜）", weekCount],
+        ["今月の累計", monthCount],
+        [],
+      ];
+
+      const header = ["日付", "内容", "記録日時", "累計アクション数", "週次累計", "今月の累計"];
+      const rows = historyEntries.map((entry) => [
+        entry.date,
+        entry.text,
+        new Intl.DateTimeFormat("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date(entry.createdAt)),
+        totalCount,
+        weekCount,
+        monthCount,
+      ]);
+
+      const csvContent = [...summaryRows, header, ...rows]
+        .map((row) => (row.length ? row.map(toCsvValue).join(",") : ""))
+        .join("\n");
+
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `history-${today.replace(/-/g, "")}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    };
+
+    entryForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      addEntry(entryInput.value);
+      entryInput.value = "";
+      entryInput.focus();
+    });
+
+    entryInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        addEntry(entryInput.value);
+        entryInput.value = "";
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const deleteButton = event.target.closest("[data-delete-id]");
+      if (!deleteButton) return;
+      const id = deleteButton.getAttribute("data-delete-id");
+      const confirmed = confirm("この行を削除しますか？");
+      if (!confirmed) return;
+      deleteEntry(id);
+    });
+
+    clearAllButton.addEventListener("click", () => {
+      const confirmed = confirm("保存したデータをすべて削除しますか？");
+      if (!confirmed) return;
+      localStorage.removeItem(STORAGE_KEY);
+      renderEntries();
+    });
+
+    exportHistoryButton.addEventListener("click", () => {
+      downloadHistoryCsv();
+    });
+
+    renderEntries();
+  </script>
+</body>
+</html>
